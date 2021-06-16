@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -65,6 +65,7 @@ app.on("ready", async () => {
   createWindow();
 });
 
+app.commandLine.appendSwitch("ignore-certificate-errors");
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {
@@ -79,3 +80,7 @@ if (isDevelopment) {
     });
   }
 }
+
+ipcMain.on("synchronous-message", (event, args) => {
+  console.log(">>>", args);
+});
