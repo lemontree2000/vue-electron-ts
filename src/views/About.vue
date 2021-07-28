@@ -1,6 +1,26 @@
 <template>
   <div class="about">
-    <a href="https://ross.baozun.com/">ross</a>
-    <h1>This is an about page</h1>
+    <webview
+      id="foo"
+      src="https://ross-sit-local.baozun.com"
+      autosize
+      min-width="1200"
+      style="height: 700px"
+      webpreferences="contextIsolation=false"
+      nodeintegration
+    ></webview>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+// import { ipcRenderer } from "electron";
+
+@Component({
+  mounted() {
+    console.log(document.getElementById("foo"));
+    // ipcRenderer.sendSync("synchronous-message", "ping");
+  },
+})
+export default class About extends Vue {}
+</script>

@@ -1,6 +1,8 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, autoUpdater } from "electron";
+// import updateElelctronApp from "update-electron-app";
+import path from "path";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -9,6 +11,16 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
+
+const server = "https://update-electron.vercel.app";
+
+const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+
+autoUpdater.setFeedURL({
+  url,
+});
+
+app.commandLine.appendSwitch("ignore-certificate-errors");
 
 async function createWindow() {
   // Create the browser window.
@@ -21,6 +33,8 @@ async function createWindow() {
       nodeIntegration: process.env
         .ELECTRON_NODE_INTEGRATION as unknown as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      webviewTag: true,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
@@ -65,7 +79,6 @@ app.on("ready", async () => {
   createWindow();
 });
 
-app.commandLine.appendSwitch("ignore-certificate-errors");
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {
